@@ -1,5 +1,5 @@
 export async function fetchData(route, method, body, cb) {
-    const response = await fetch("http://localhost:3000/" + route, {
+    const response = await fetch("https://back-j4hv6ww1t-shadow-childs-projects.vercel.app/" + route, {
         method,
         body: JSON.stringify(body),
         headers: {
