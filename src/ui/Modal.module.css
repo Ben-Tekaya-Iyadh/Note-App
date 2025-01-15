@@ -1,0 +1,10 @@
+.modal {
+    border: none;
+    width: 80%;
+    max-width: 500px;
+    max-height: 50vh;
+}
+
+.modal h1 {
+    font-size: clamp(20px , 30px, 50px)
+}

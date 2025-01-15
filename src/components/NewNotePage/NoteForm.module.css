@@ -1,0 +1,12 @@
+.form label {
+    color: #676767;
+    font-weight: 600;
+}
+
+.form {
+    overflow: auto;
+    padding: 20px;
+}
+
+
+

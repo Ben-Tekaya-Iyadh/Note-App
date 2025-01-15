@@ -1,0 +1,33 @@
+.form_actions {
+    display: flex;
+    gap: 30px;
+    justify-content: end;
+    height: 50px;
+    max-height: 10vh;
+    padding: 15px;
+}
+
+.text_btn {
+    background-color: transparent;
+    border: none;
+    color: rgb(99,99,99);
+    text-decoration: none;
+    align-content: center;
+}
+
+.btn {
+    background-color: rgb(255, 204, 0);
+    color: rgb(99,99,99);
+    border-radius: 10px;
+    padding: 10px;
+    border: none;
+}
+
+.text_btn.dark {
+    color: rgb(216, 216, 216);
+}
+
+.btn.dark {
+    background-color: rgb(255, 179, 0);
+    color: rgb(255, 255, 255);
+}
