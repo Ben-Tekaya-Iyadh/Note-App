@@ -4,15 +4,14 @@ const isValidNote = require("../util/noteValidation")
 
 
 exports.getAllNotes = (req, res) => {
-  res.send("Hello")
-  // Note.fetchAll((err, rows) => {
-  //   if (err) {
-  //     res.status(404).send();
-  //   } else {
-  //     console.log(rows)
-  //     res.json(rows);
-  //   }
-  // });
+  Note.fetchAll((err, rows) => {
+    if (err) {
+      res.status(404).send();
+    } else {
+      console.log(rows)
+      res.json(rows);
+    }
+  });
 }
 
 exports.postNewNote = (req, res) => {
