@@ -41,9 +41,10 @@ app.use(express.json());
 
 app.use("/notes", notesRoutes)
 
+app.listen(port, () => {
+  console.log("Server running on port 3000")
+})
+
 module.exports = app;
 
 
-// app.listen(port, () => {
-//   console.log("Server running on port 3000")
-// })
