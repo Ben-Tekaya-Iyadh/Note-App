@@ -1,17 +1,18 @@
-const { json } = require("body-parser");
 const Note = require("../models/notes")
-const isValidNote = require("../util/noteValidation")
+const isValidNote = require("../util/noteValidation");
+const chalk = require("chalk");
 
 
 exports.getAllNotes = (req, res) => {
+  console.log(chalk.green("all notes"))
   Note.fetchAll((err, rows) => {
     if (err) {
-      res.status(404).send();
+      res.status(404).json({ message: "Error fetching notes!", error: true })
     } else {
-      console.log(rows)
-      res.json(rows);
+      res.status(200).json(rows);
     }
-  });
+  }
+  );
 }
 
 exports.postNewNote = (req, res) => {
@@ -22,10 +23,10 @@ exports.postNewNote = (req, res) => {
     const newNote = new Note(req.body);
     newNote.createNew((err) => {
       if (err) {
-        console.log(err)
-        res.status(400).end()
+        res.status(403).send({ message: "Failed to created new note!", error: true })
+      } else {
+        res.status(201).send({ message: "Created", error: false })
       }
-      res.status(201).send({ message: "Created", error: false })
     })
   } else {
     res.status(400).send({ message: "One or many data fields are invalid.", failure: isValid.failure })
@@ -36,18 +37,25 @@ exports.postNewNote = (req, res) => {
 exports.getNoteById = (req, res) => {
   const id = req.params.id;
   Note.fetchbyId(id, (err, note) => {
-    if (err || !note) {
-      res.status(404).send({ message: "Invalid note id", error: true })
-    } else {
-      res.json({ ...note, attachement: JSON.parse(note.attachement) })
+    if (err) {
+      return res.status(404).send({ message: "Failed to load note!", error: true })
     }
+
+    if (!note) {
+      return res.status(404).send({ message: "Invalid id", error: true })
+    }
+    res.json(note)
+
   })
 }
 
 exports.deleteNotes = (req, res) => {
   const deleteList = req.body.deleteList
-  Note.deleteNotes(deleteList, (result) => {
-    res.json(result)
+  Note.deleteNotes(deleteList, (err, result) => {
+    if (err) {
+      return res.status(400).json({ message: "Failed to delete Note(s)" })
+    }
+    res.status(200).json(result)
   })
 }
 
@@ -58,20 +66,14 @@ exports.updateNote = (req, res) => {
       console.log(chalk.red("Failed to update note"))
       res.status(400).send({ message: "Failed to update note.", error: true })
     } else {
-      res.status(202).json({ message: "Note updated.", error: false })
+      res.status(200).json({ message: "Note updated.", error: false })
     }
   })
 }
 
 exports.getDeletedNotes = (req, res) => {
-  console.log("requesting deleted")
-  Note.fetchDeleted((err, notes) => {
-    if (err) {
-      console.log(err)
-      res.status(400).send()
-    } else {
-      res.status(200).json(notes)
-    }
+  Note.fetchDeleted((notes) => {
+    res.status(200).json(notes)
   })
 }
 

@@ -9,11 +9,10 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "body-parser": "^1.20.3",
     "chalk": "^4.1.2",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "http": "^0.0.1-security",
-    "sqlite3": "^5.1.7"
+    "mongodb": "^6.12.0"
   }
 }

@@ -1,14 +1,32 @@
-const sqlite3 = require("sqlite3");
-const path = require("path")
+const { MongoClient } = require("mongodb");
+const chalk = require("chalk");
+require("dotenv").config();
 
-const dbPath = path.join("./tmp") + "/notes.db"
+const MongoUri = process.env.MONGO_URI;
+let db;
 
-const db = new sqlite3.Database(dbPath, (err)=> {
-    if(err) {
-        console.log("Failed to establish connection to data-base.", err);
-    } else {
-        console.log("Connection established to data-base.")
-    }
-});
+const mongoConnect = async callback => {
 
-module.exports = db 
+  const database = MongoClient.connect(MongoUri)
+    .then(client => {
+      console.log("MongoDB connected");
+      callback && callback();
+      return client.db();
+    })
+    .catch(err => {
+      console.log("Error Connecting to db", err);
+      return err;
+    })
+
+  return database
+}
+
+async function getDb() {
+  db = await mongoConnect()
+  if (db) {
+    return db
+  }
+  throw new Error("No Database connection");
+}
+
+module.exports = { mongoConnect, getDb }

@@ -1,15 +1,7 @@
-const fs = require("fs");
-const path = require('path');
-const db = require("../data/database");
 const chalk = require("chalk")
+const { getDb } = require("../data/database")
 const getDate = require("../util/getDate");
-const { error } = require("console");
-
-const p = path.join(
-  path.dirname(require.main.filename),
-  'data',
-  'notes.json'
-);
+const { ObjectId } = require("mongodb");
 
 
 module.exports = class Note {
@@ -24,107 +16,56 @@ module.exports = class Note {
   }
 
 
-  createNew(cb) {
-    db.run(`
-      INSERT INTO notes (
-       title, 
-       description, 
-       color, 
-       content, 
-       attachement,
-       creationDate,
-       lastModified
-      ) VALUES (?,?,?,?,?,?,?)
-    `, [
-      this.title,
-      this.description,
-      this.color,
-      this.content,
-      JSON.stringify(this.attachement),
-      this.creationDate,
-      this.lastModified
-    ], cb);
-  }
-
-  static fetchAll(cb) {
-    db.all(` SELECT id, title, description, content, lastModified, color FROM notes `, cb);
-  }
-
-  static fetchbyId(id, cb) {
-    console.log(id)
-    db.get(`
-    SELECT * FROM notes WHERE id= ?`, [id], cb);
-  }
-
-  static deleteNotes(list, cb) {
-    let placeHolders = list.map(() => `?`).join(",")
-    db.serialize(() => {
-      db.run('BEGIN TRANSACTION');
-
-      db.run(`
-        INSERT INTO recentDelete (
-              id,
-              title,
-              description,
-              color,
-              content,
-              attachement,
-              creationDate,
-              lastModified,
-              deleteDate
-        )
-        SELECT *, ? FROM notes WHERE id IN (${placeHolders})
-      `, [getDate() ,...list], (err) => { 
-        if (err) {
-          console.log(err)
-          db.run("ROLLBACK")
-          return cb({ message: err, error: true })
-        }
-
-        db.run(`DELETE FROM notes WHERE id IN (${placeHolders})`
-        , list, (err)=> {
-          if(err) {
-            db.run("ROLLBACK")
-            return cb({message: err, error: true})
-          }
-
-          db.run("COMMIT", (err)=> {
-            if (err) {
-              return cb({message: err, error: true})
-            }
-            cb({message:"Note(s) deleted.", error: false})
-          })
-        })
-      });
-
+   async createNew(cb) {
+    const db = await getDb();
+    const result = db.collection("notes").insertOne(this).then((val) => {
+      console.log(val.insertedId)
+      cb()
     })
 
-  } 
-
-  static fetchDeleted(cb) {
-    db.all(`
-      SELECT id, title, description, content, lastModified, color FROM recentDelete
-      `, cb)
   }
 
-  static updateById(data, cb) {
-    db.run(`
-      UPDATE notes
-      SET title = ? , description = ?, content= ?, color= ?, attachement = ?, lastModified = ?
-      WHERE id = ?;
-      `, [
-      data.title,
-      data.description,
-      data.content,
-      data.color,
-      JSON.stringify(data.attachement),
-      data.lastModified,
-      data.id
-    ], cb)
+  static async fetchAll(cb) {
+    const db = await getDb()
+    db.collection('notes').find().toArray()
+      .then((res) => {cb(null, res)})
+      .catch((err) => {console.log(err) ;cb(err)})
   }
 
-  static fetchDeletedById(id, cb) {
-    db.get(`
-      SELECT * FROM recentDelete WHERE id = ?;`, [id], cb)
+  static async fetchbyId(id, cb) {
+    const db = await getDb()
+    db.collection('notes').findOne({ _id: new ObjectId(id) })
+      .then(res => cb(null, res))
+      .catch(err => cb(err))
+  }
+
+  static async deleteNotes(list, cb) {
+    const idList = list.map(id => {
+      return new ObjectId(id)
+    });
+    const db = await getDb()
+    const notesCollection = db.collection("notes");
+    const deletedCollection = db.collection("deleted");
+
+    notesCollection.find({ _id: { $in: idList } }).toArray()
+      .then((rows) => {
+        return deletedCollection.insertMany(rows);
+      })
+      .then(() => notesCollection.deleteMany({ _id: { $in: idList } }))
+      .then(() => cb(null, { message: "Note(s) deleted", error: false }))
+      .catch((err) => cb(err))
+  }
+
+  static async fetchDeleted(cb) {
+    const db = await getDb();
+    db.collection("deleted").find().toArray().then((res) => cb(res))
+  }
+
+  static async updateById(data, cb) {
+    const db = await getDb();
+    const objId = new ObjectId(data._id)
+    db.collection("notes").replaceOne({ _id: objId }, { ...data, _id: objId })
+      .then(() => cb())
+      .catch((err) => cb(err))
   }
 }

@@ -1,4 +1,4 @@
-module.exports = getDate = () => {
+module.exports = () => {
     const date = new Date();
     const dd = date.getDate();
     const mm = date.getMonth()+1;
@@ -6,3 +6,4 @@ module.exports = getDate = () => {
 
     return dd.toFixed().padStart(2,0) + "/" + mm.toFixed().padStart(2,0) + "/" + yy;
 }
+

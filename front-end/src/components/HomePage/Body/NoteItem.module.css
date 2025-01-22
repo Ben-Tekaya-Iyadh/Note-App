@@ -1,0 +1,51 @@
+.note_item a {
+    text-decoration: none;
+}
+
+.note_item .item_content {
+    position: relative;
+    border: 1px solid rgb(195, 195, 195);
+    border-radius: 15px;
+    height: 100%;
+    padding: 10px;
+    padding-bottom: 35px;
+}
+
+.note_item.galery_mode {
+    width: 160px;
+    margin: auto;
+    aspect-ratio: 1/1;
+}
+
+.note_item.list_mode {
+    min-height: 100px;
+    margin: 0 0 20px 0;
+}
+
+.title, .description, .date, .body {
+    margin: 0;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2; /* Limits the text to 2 lines */
+    overflow: hidden; /* Hides the overflow text */
+    text-overflow: ellipsis; /* Adds "..." at the end of the visible text */
+}
+
+.title {
+    -webkit-line-clamp: 1; /* Limits the text to 2 lines */
+}
+
+.date {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding: 10px;
+    font-size: 16px;
+}
+
+
+.selection {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
