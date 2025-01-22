@@ -32,14 +32,12 @@ To run this app locally:
 
 2. Install front-end dependencies and run:
    ```bash
+   cd front-end
    npm install
    npm run dev
-
-3. Navigate to back-end folder:
+   
+3. Install back-end dependencies and run:
    ```bash
    cd back-end
-   
-4. Install back-end dependencies and run:
-   ```bash
    npm install
    node api/app.js
