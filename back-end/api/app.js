@@ -16,8 +16,12 @@ app.use(express.json());
 
 app.use("/notes", notesRoutes)
 
-mongoConnect()
-
 module.exports = app
 
-console.log("app.js executed")
+//This code was used in development phase:
+
+// mongoConnect(()=> {
+//  app.listen(port, ()=> console.log(`Listening on port ${port}`))
+// })
+
+
