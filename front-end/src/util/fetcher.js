@@ -2,7 +2,10 @@ import { useState } from "react"
 
 export async function fetchData(route, method, body, cb) {
 
-    const response = await fetch("http://localhost:3000/" + route, {
+    // const path = "http://localhost:3000/"   for development phase
+    const path = "https://note-app-opal-six.vercel.app/"
+
+    const response = await fetch(path + route, {
         method,
         body: JSON.stringify(body),
         headers: {
