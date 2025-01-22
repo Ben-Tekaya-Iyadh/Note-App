@@ -6,7 +6,7 @@ const MongoUri = process.env.MONGO_URI;
 let db;
 
 const mongoConnect = async callback => {
-
+  console .log(MongoUri)
   const database = MongoClient.connect(MongoUri)
     .then(client => {
       console.log("MongoDB connected");
